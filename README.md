@@ -1,26 +1,19 @@
-# Food Coupon App
+# 🍽️ Food Coupon Generator
 
-## Features
-- Auto-generate coupons based on spend thresholds
-- SVG QR codes for crisp printing
-- Redeem page with QR scanning (html5-qrcode)
-- Firestore backend hooks
-- EmailJS & Twilio/Vonage placeholders
+A simple **serverless web app** to auto-generate food coupons based on amount.
 
-## Deployment
-### Netlify Drop (easiest)
-1. Go to https://app.netlify.com/drop
-2. Drag and drop this zip file
-3. Done!
+### Rules
+- Rs 500 → 2 coupons
+- Rs 1000 → 3 coupons
+- Rs 1500 → 4 coupons
+- Rs 5000 and above → 8 coupons
 
-### GitHub + Netlify
-1. Create a GitHub repo
-2. Push these files
-3. Connect repo to Netlify (Publish directory = `/`)
+### Features
+- Auto-generate unique coupon codes
+- QR codes for each coupon
+- Print button for each coupon
+- 100% client-side (no backend required)
 
-### Vercel
-1. Create new project
-2. Import from GitHub
-3. Deploy
-
-Configure Firebase + API keys in `app.js` and `redeem.js` where marked.
+### Deployment
+1. Upload files to GitHub repository
+2. Deploy on [Netlify](https://netlify.com) or [Vercel](https://vercel.com)
