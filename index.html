@@ -1,12 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Food Coupon App</title>
+  <meta charset="UTF-8">
+  <title>Food Coupon Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 { color: #333; }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .coupon {
+      border: 2px dashed #333;
+      background: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      width: 300px;
+    }
+    .coupon-code {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script src="app.js"></script>
+  <h1>🍽️ Food Coupon Generator</h1>
+
+  <label>Enter Amount (Rs):</label><br>
+  <input type="number" id="amount" placeholder="Enter amount" />
+  <button onclick="generateCoupons()">Generate</button>
+
+  <div id="coupons"></div>
+
+  <script>
+    function getCouponCount(amount) {
+      if (amount >= 5000) return 8;
+      if (amount >= 1500) return 4;
+      if (amount >= 1000) return 3;
+      if (amount >= 500) return 2;
+      return 0;
+    }
+
+    function generateUniqueCode() {
+      return "CPN-" + Math.random().toString(36).substr(2, 8).toUpperCase();
+    }
+
+    async function generateCoupons() {
+      const amount = parseInt(document.getElementById("amount").value);
+      const container = document.getElementById("coupons");
+      container.innerHTML = "";
+
+      const count = getCouponCount(amount);
+      if (count === 0) {
+        container.innerHTML = "<p>No coupons eligible.</p>";
+        return;
+      }
+
+      for (let i = 0; i < count; i++) {
+        const code = generateUniqueCode();
+
+        const div = document.createElement("div");
+        div.className = "coupon";
+
+        const codeEl = document.createElement("div");
+        codeEl.className = "coupon-code";
+        codeEl.innerText = "Coupon Code: " + code;
+
+        const canvas = document.createElement("canvas");
+        await QRCode.toCanvas(canvas, code);
+
+        const printBtn = document.createElement("button");
+        printBtn.innerText = "Print Coupon";
+        printBtn.onclick = () => {
+          const w = window.open();
+          w.document.write(`<h2>Coupon</h2><p>${code}</p>`);
+          w.document.body.appendChild(canvas.cloneNode(true));
+          w.print();
+        };
+
+        div.appendChild(codeEl);
+        div.appendChild(canvas);
+        div.appendChild(printBtn);
+        container.appendChild(div);
+      }
+    }
+  </script>
 </body>
 </html>
