@@ -1,14 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Redeem Coupon</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { color: #333; }
+    #reader { width: 300px; margin: 20px auto; }
+    input, button { padding: 10px; font-size: 16px; margin: 10px 0; }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>Coupon Redeem Page</h1>
-  <div id="reader" style="width:300px"></div>
-  <div id="result"></div>
-  <script src="redeem.js"></script>
+  <h1>🎫 Redeem Coupon</h1>
+
+  <div id="reader"></div>
+
+  <label>Or enter coupon manually:</label><br>
+  <input type="text" id="couponInput" placeholder="Enter Coupon Code" />
+  <button onclick="redeemCoupon()">Redeem</button>
+
+  <p id="result"></p>
+
+  <script>
+    // Start QR scanner
+    function onScanSuccess(decodedText) {
+      document.getElementById("couponInput").value = decodedText;
+      redeemCoupon();
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 }
+    );
+    html5QrcodeScanner.render(onScanSuccess);
+
+    // Redeem logic
+    function redeemCoupon() {
+      const code = document.getElementById("couponInput").value.trim();
+      const resultEl = document.getElementById("result");
+
+      if (!code) {
+        resultEl.innerHTML = "<span class='error'>Please enter or scan a code.</span>";
+        return;
+      }
+
+      let coupons = JSON.parse(localStorage.getItem("coupons") || "[]");
+      let found = coupons.find(c => c.code === code);
+
+      if (!found) {
+        resultEl.innerHTML = "<span class='error'>❌ Invalid Coupon!</span>";
+        return;
+      }
+
+      if (found.redeemed) {
+        resultEl.innerHTML = "<span class='error'>⚠️ Already Redeemed!</span>";
+        return;
+      }
+
+      found.redeemed = true;
+      localStorage.setItem("coupons", JSON.stringify(coupons));
+      resultEl.innerHTML = "<span class='success'>✅ Coupon Redeemed Successfully!</span>";
+    }
+  </script>
 </body>
 </html>
